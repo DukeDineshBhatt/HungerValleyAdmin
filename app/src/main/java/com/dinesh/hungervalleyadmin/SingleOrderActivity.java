@@ -1,5 +1,11 @@
 package com.dinesh.hungervalleyadmin;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -7,11 +13,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,6 +38,8 @@ public class SingleOrderActivity extends AppCompatActivity {
     DatabaseReference mCartListDatabase, mUserDatabase, myDatabase;
     String userId;
     TextView number, name, address, altNumber;
+    ProgressBar progressbar;
+    Button delete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +52,8 @@ public class SingleOrderActivity extends AppCompatActivity {
         altNumber = (TextView) findViewById(R.id.altPhoneNumber);
         name = (TextView) findViewById(R.id.name);
         address = (TextView) findViewById(R.id.address);
+        progressbar = findViewById(R.id.progressbar);
+        delete = findViewById(R.id.delete);
 
         number.setText("Phone Number : " + userId);
 
@@ -49,20 +64,48 @@ public class SingleOrderActivity extends AppCompatActivity {
         recyclerView.setNestedScrollingEnabled(false);
 
 
+
         mCartListDatabase = FirebaseDatabase.getInstance().getReference().child("Orders List").child("User View").child(userId);
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
 
         mUserDatabase.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+
+                progressbar.setVisibility(View.VISIBLE);
 
                 name.setText(dataSnapshot.child("username").getValue().toString());
-                altNumber.setText("Alternate Number : " + dataSnapshot.child("mobile_number").getValue().toString());
+                altNumber.setText("Alternate Number : " + dataSnapshot.child("Address").child("Mobile").getValue().toString());
                 address.setText(dataSnapshot.child("Address").child("landmark").getValue().toString() + "\n" + dataSnapshot.child("Address").child("locality").getValue().toString() + "\n" + dataSnapshot.child("Address").child("location").getValue().toString());
+
+                altNumber.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        Intent callIntent = new Intent(Intent.ACTION_DIAL);
+                        callIntent.setData(Uri.parse("tel:" + dataSnapshot.child("Address").child("Mobile").getValue().toString()));
+                        startActivity(callIntent);
+                    }
+                });
+
+                progressbar.setVisibility(View.GONE);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                progressbar.setVisibility(View.GONE);
+            }
+        });
+
+
+        number.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent callIntent = new Intent(Intent.ACTION_DIAL);
+                callIntent.setData(Uri.parse("tel:" + userId));
+                startActivity(callIntent);
 
             }
         });
@@ -78,7 +121,7 @@ public class SingleOrderActivity extends AppCompatActivity {
             @Override
             protected void populateViewHolder(final FriendsViewHolder viewHolder, CartDataSetGet model, int position) {
 
-                Log.d("masin" , getRef(position).getKey());
+                Log.d("masin", getRef(position).getKey());
 
                 String restaurantName = getRef(position).getKey();
 
@@ -103,7 +146,7 @@ public class SingleOrderActivity extends AppCompatActivity {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
 
-                                viewHolder.setpName(productName);
+                                // viewHolder.setpName(productName);
 
                                 //viewHolder.setQuantity("2");
 
@@ -126,7 +169,6 @@ public class SingleOrderActivity extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
 
 
-
                     }
 
                     @Override
@@ -138,9 +180,51 @@ public class SingleOrderActivity extends AppCompatActivity {
 
             }
         };
+        //recyclerView.setAdapter(friendsRecyclerView);
 
-        recyclerView.setAdapter(friendsRecyclerView);
 
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                new AlertDialog.Builder(SingleOrderActivity.this)
+                        .setMessage("are you sure want to Delete this order?")
+                        .setNegativeButton(android.R.string.no, null)
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface arg0, int arg1) {
+
+                                mCartListDatabase.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                       //progressbar.setVisibility(View.VISIBLE);
+
+                                        if (task.isSuccessful()){
+
+                                            Intent intent = new Intent(SingleOrderActivity.this, NewOrdersActivity.class);
+                                            startActivity(intent);
+                                            finish();
+
+                                            Toast.makeText(SingleOrderActivity.this,"This Order deleted successfully.",Toast.LENGTH_SHORT).show();
+
+                                        }else
+                                        {
+                                            Toast.makeText(SingleOrderActivity.this,"Please try again!.",Toast.LENGTH_SHORT).show();
+
+                                        }
+
+                                    }
+                                });
+
+
+
+                            }
+                        }).create().show();
+
+
+
+            }
+        });
     }
 
 
