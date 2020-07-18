@@ -3,7 +3,7 @@
     package="com.dinesh.hungervalleyadmin">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CALL_PHONE"></uses-permission>
+    <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
@@ -13,9 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".OrdersActivity"></activity>
-        <activity android:name=".NewOrdersActivity"></activity>
+        <activity android:name=".OrdersActivity" />
+        <activity android:name=".NewOrdersActivity" />
         <activity android:name=".SingleOrderActivity" />
         <activity android:name=".MyActivity">
             <intent-filter>
@@ -24,10 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".MainActivity">
-
-        </activity>
+        <activity android:name=".MainActivity"></activity>
     </application>
 
 </manifest>
