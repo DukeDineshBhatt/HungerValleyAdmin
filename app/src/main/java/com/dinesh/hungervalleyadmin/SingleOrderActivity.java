@@ -1,18 +1,15 @@
 package com.dinesh.hungervalleyadmin;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -20,7 +17,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -31,15 +34,18 @@ import com.google.firebase.database.ValueEventListener;
 
 public class SingleOrderActivity extends AppCompatActivity {
 
-    private RecyclerView recyclerView;
+    private RecyclerView res_name;
 
-    private LinearLayoutManager linearLayoutManager;
+    private LinearLayoutManager linearLayoutManager, linearLayoutManager1;
 
-    DatabaseReference mCartListDatabase, mUserDatabase, myDatabase;
+    private DatabaseReference mCartListDatabase, mUserDatabase, myDatabase;
     String userId;
-    TextView number, name, address, altNumber;
+    TextView number, name, address, altNumber, total, status;
     ProgressBar progressbar;
-    Button delete;
+    Button delete,edit;
+
+    private myadapter adapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,15 +60,17 @@ public class SingleOrderActivity extends AppCompatActivity {
         address = (TextView) findViewById(R.id.address);
         progressbar = findViewById(R.id.progressbar);
         delete = findViewById(R.id.delete);
+        total = findViewById(R.id.total);
+        status = findViewById(R.id.status);
+        edit = findViewById(R.id.edit);
 
         number.setText("Phone Number : " + userId);
 
-        recyclerView = (RecyclerView) findViewById(R.id.upload_list);
-        linearLayoutManager = new LinearLayoutManager(SingleOrderActivity.this);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setNestedScrollingEnabled(false);
+        res_name = (RecyclerView) findViewById(R.id.res_name);
+        Log.d("DDDD", userId);
 
+        // res_name.setHasFixedSize(true);
+        // res_name.setNestedScrollingEnabled(false);
 
 
         mCartListDatabase = FirebaseDatabase.getInstance().getReference().child("Orders List").child("User View").child(userId);
@@ -70,7 +78,7 @@ public class SingleOrderActivity extends AppCompatActivity {
 
         mUserDatabase.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+            public void onDataChange(final DataSnapshot dataSnapshot) {
 
                 progressbar.setVisibility(View.VISIBLE);
 
@@ -92,12 +100,11 @@ public class SingleOrderActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError) {
 
                 progressbar.setVisibility(View.GONE);
             }
         });
-
 
         number.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,7 +117,23 @@ public class SingleOrderActivity extends AppCompatActivity {
             }
         });
 
-        FirebaseRecyclerAdapter<CartDataSetGet, FriendsViewHolder> friendsRecyclerView = new FirebaseRecyclerAdapter<CartDataSetGet, FriendsViewHolder>(
+        linearLayoutManager = new LinearLayoutManager(SingleOrderActivity.this);
+        res_name.setLayoutManager(linearLayoutManager);
+
+
+        FirebaseRecyclerOptions<OrderSetGet> options =
+                new FirebaseRecyclerOptions.Builder<OrderSetGet>()
+                        .setQuery(FirebaseDatabase.getInstance().getReference().child("Orders List").child("User View").child(userId).child("Orders"), OrderSetGet.class)
+                        .build();
+
+        adapter = new myadapter(options);
+        adapter.startListening();
+        res_name.setAdapter(adapter);
+
+
+
+
+        /*FirebaseRecyclerAdapter<CartDataSetGet, FriendsViewHolder> friendsRecyclerView = new FirebaseRecyclerAdapter<CartDataSetGet, FriendsViewHolder>(
 
                 CartDataSetGet.class,
                 R.layout.list_cart_item,
@@ -179,9 +202,16 @@ public class SingleOrderActivity extends AppCompatActivity {
                 });
 
             }
-        };
-        //recyclerView.setAdapter(friendsRecyclerView);
+        };*/
 
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                showAlertDialog();
+
+            }
+        });
 
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -196,20 +226,19 @@ public class SingleOrderActivity extends AppCompatActivity {
 
                                 mCartListDatabase.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
-                                    public void onComplete(@NonNull Task<Void> task) {
-                                       //progressbar.setVisibility(View.VISIBLE);
+                                    public void onComplete(Task<Void> task) {
+                                        //progressbar.setVisibility(View.VISIBLE);
 
-                                        if (task.isSuccessful()){
+                                        if (task.isSuccessful()) {
 
                                             Intent intent = new Intent(SingleOrderActivity.this, NewOrdersActivity.class);
                                             startActivity(intent);
                                             finish();
 
-                                            Toast.makeText(SingleOrderActivity.this,"This Order deleted successfully.",Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(SingleOrderActivity.this, "This Order deleted successfully.", Toast.LENGTH_SHORT).show();
 
-                                        }else
-                                        {
-                                            Toast.makeText(SingleOrderActivity.this,"Please try again!.",Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(SingleOrderActivity.this, "Please try again!.", Toast.LENGTH_SHORT).show();
 
                                         }
 
@@ -217,73 +246,98 @@ public class SingleOrderActivity extends AppCompatActivity {
                                 });
 
 
-
                             }
                         }).create().show();
 
 
+            }
+        });
+        FirebaseDatabase.getInstance().getReference().child("Orders List").child("User View").child(userId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                status.setText(dataSnapshot.child("Status").getValue().toString());
+                total.setText(String.valueOf(dataSnapshot.child("Total Price").getValue()));
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
-    }
-
-
-    public static class FriendsViewHolder extends RecyclerView.ViewHolder {
-
-        View mView;
-        LinearLayout linear_layout;
-        private RecyclerView recyclerView;
-        private LinearLayoutManager linearLayoutManager;
-
-        public FriendsViewHolder(View itemView) {
-            super(itemView);
-
-            mView = itemView;
-
-            linear_layout = (LinearLayout) itemView.findViewById(R.id.linear_layout);
-
-            recyclerView = (RecyclerView) itemView.findViewById(R.id.upload_list);
-            linearLayoutManager = new LinearLayoutManager(itemView.getContext());
-            recyclerView.setLayoutManager(linearLayoutManager);
-            recyclerView.setHasFixedSize(true);
-            recyclerView.setNestedScrollingEnabled(false);
-
-
-        }
-
-        public void setName(String name) {
-            TextView userName = (TextView) mView.findViewById(R.id.restaurant_name);
-            userName.setText(name);
-
-        }
-
 
     }
 
-    public static class MyFriendsViewHolder extends RecyclerView.ViewHolder {
 
-        View mView;
 
-        public MyFriendsViewHolder(View itemView) {
-            super(itemView);
+    private void showAlertDialog() {
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(SingleOrderActivity.this);
+        alertDialog.setTitle("Status");
+        String[] items = {"java","android","Data Structures","HTML","CSS"};
+        int checkedItem = 1;
+        alertDialog.setSingleChoiceItems(items, checkedItem, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case 0:
+                        Toast.makeText(SingleOrderActivity.this, "Clicked on java", Toast.LENGTH_LONG).show();
+                        break;
+                    case 1:
+                        Toast.makeText(SingleOrderActivity.this, "Clicked on android", Toast.LENGTH_LONG).show();
+                        break;
+                    case 2:
+                        Toast.makeText(SingleOrderActivity.this, "Clicked on Data Structures", Toast.LENGTH_LONG).show();
+                        break;
+                    case 3:
+                        Toast.makeText(SingleOrderActivity.this, "Clicked on HTML", Toast.LENGTH_LONG).show();
+                        break;
+                    case 4:
+                        Toast.makeText(SingleOrderActivity.this, "Clicked on CSS", Toast.LENGTH_LONG).show();
+                        break;
+                }
+            }
+        });
+        AlertDialog alert = alertDialog.create();
+        alert.setCanceledOnTouchOutside(false);
+        alert.show();
+    }
 
-            mView = itemView;
 
+    public class myadapter extends FirebaseRecyclerAdapter<OrderSetGet, myadapter.myviewholder> {
+        public myadapter(@NonNull FirebaseRecyclerOptions<OrderSetGet> options) {
+            super(options);
         }
 
-        public void setpName(String pName) {
-            TextView textpName = (TextView) mView.findViewById(R.id.product_name);
-            textpName.setText(pName);
+        @Override
+        protected void onBindViewHolder(@NonNull myadapter.myviewholder holder, int position, @NonNull OrderSetGet model) {
 
+            holder.restro.setText(model.getRes());
+            holder.price.setText(model.getPrice());
+            holder.product_name.setText(model.getpName());
+            holder.quantity.setText(model.getQuantity());
         }
 
-        public void setQuantity(String quantity) {
-            EditText edit_qnty = (EditText) mView.findViewById(R.id.qnty);
-            edit_qnty.setText(quantity);
-
+        @NonNull
+        @Override
+        public myadapter.myviewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.nested_list, parent, false);
+            return new myadapter.myviewholder(view);
         }
 
+        class myviewholder extends RecyclerView.ViewHolder {
 
+            TextView restro, price, product_name, quantity;
+
+            public myviewholder(@NonNull View itemView) {
+                super(itemView);
+                price = (TextView) itemView.findViewById(R.id.price);
+                restro = (TextView) itemView.findViewById(R.id.restro);
+                product_name = (TextView) itemView.findViewById(R.id.product_name);
+                quantity = (TextView) itemView.findViewById(R.id.qnty);
+
+
+            }
+        }
     }
 
 

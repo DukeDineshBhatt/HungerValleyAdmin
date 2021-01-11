@@ -2,15 +2,19 @@ package com.dinesh.hungervalleyadmin;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -19,43 +23,51 @@ import com.google.firebase.database.ValueEventListener;
 
 public class NewOrdersActivity extends AppCompatActivity {
 
-
-    DatabaseReference mOrdersDatabase;
+    private DatabaseReference mOrdersDatabase;
 
     ProgressBar progressBar;
     TextView txt_no_order;
     private LinearLayoutManager linearLayoutManager;
     private RecyclerView recyclerView;
+    private myadapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_orders);
 
-
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         txt_no_order = (TextView) findViewById(R.id.txt_no_orders);
         recyclerView = (RecyclerView) findViewById(R.id.upload_list);
 
-        linearLayoutManager = new LinearLayoutManager(NewOrdersActivity.this);
-        recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setNestedScrollingEnabled(false);
         progressBar.setVisibility(View.VISIBLE);
-
 
         mOrdersDatabase = FirebaseDatabase.getInstance().getReference().child("Orders List").child("User View");
 
         mOrdersDatabase.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
 
                 if (dataSnapshot.hasChildren()) {
 
                     txt_no_order.setVisibility(View.GONE);
 
+                    linearLayoutManager = new LinearLayoutManager(NewOrdersActivity.this);
+                    recyclerView.setLayoutManager(linearLayoutManager);
+                    //recyclerView.setHasFixedSize(true);
+                    //recyclerView.setNestedScrollingEnabled(false);
 
-                    FirebaseRecyclerAdapter<MyDataSetGet, FriendsViewHolder> friendsRecyclerView = new FirebaseRecyclerAdapter<MyDataSetGet, FriendsViewHolder>(
+                    FirebaseRecyclerOptions<ListSetGet> options =
+                            new FirebaseRecyclerOptions.Builder<ListSetGet>()
+                                    .setQuery(FirebaseDatabase.getInstance().getReference().child("Orders List").child("User View"), ListSetGet.class)
+                                    .build();
+
+
+                    adapter = new myadapter(options);
+                    adapter.startListening();
+                    recyclerView.setAdapter(adapter);
+
+                    /*FirebaseRecyclerAdapter<MyDataSetGet, FriendsViewHolder> friendsRecyclerView = new FirebaseRecyclerAdapter<MyDataSetGet, FriendsViewHolder>(
 
                             MyDataSetGet.class,
                             R.layout.list_item_single,
@@ -118,8 +130,9 @@ public class NewOrdersActivity extends AppCompatActivity {
                         }
                     };
 
-                    recyclerView.setAdapter(friendsRecyclerView);
+                    recyclerView.setAdapter(friendsRecyclerView);*/
 
+                    progressBar.setVisibility(View.GONE);
 
                 } else {
 
@@ -132,7 +145,7 @@ public class NewOrdersActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
@@ -140,30 +153,61 @@ public class NewOrdersActivity extends AppCompatActivity {
 
     }
 
-    public static class FriendsViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    protected void onStart() {
+        super.onStart();
+     
 
-        View mView;
+    }
 
+   /* @Override
+    protected void onStop() {
+        super.onStop();
+        adapter.stopListening();
+    }*/
 
-        public FriendsViewHolder(View itemView) {
-            super(itemView);
-
-            mView = itemView;
-
+    public class myadapter extends FirebaseRecyclerAdapter<ListSetGet, myadapter.myviewholder> {
+        public myadapter(@NonNull FirebaseRecyclerOptions<ListSetGet> options) {
+            super(options);
         }
 
+        @Override
+        protected void onBindViewHolder(@NonNull myviewholder holder, final int position, @NonNull ListSetGet model) {
 
-        public void setName(String name) {
-            TextView userName = (TextView) mView.findViewById(R.id.name);
-            userName.setText(name);
+            final String Id = getRef(position).getKey();
+            holder.name.setText(Id);
+            holder.status.setText(model.getStatus());
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    Intent intent = new Intent(NewOrdersActivity.this, SingleOrderActivity.class);
+                    intent.putExtra("user_id", Id);
+                    startActivity(intent);
+
+                }
+            });
         }
 
-        public void setStatus(String status) {
-            TextView txt_status = (TextView) mView.findViewById(R.id.status);
-            txt_status.setText(status);
+        @NonNull
+        @Override
+        public myviewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_single, parent, false);
+            return new myviewholder(view);
         }
 
+        class myviewholder extends RecyclerView.ViewHolder {
 
+            TextView name, status;
+
+            public myviewholder(@NonNull View itemView) {
+                super(itemView);
+                name = (TextView) itemView.findViewById(R.id.name);
+                status = (TextView) itemView.findViewById(R.id.status);
+
+            }
+        }
     }
 
 

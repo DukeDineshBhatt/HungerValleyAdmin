@@ -1,22 +1,12 @@
 package com.dinesh.hungervalleyadmin;
 
 import android.app.AlertDialog;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.os.Build;
-import android.os.Vibrator;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +15,11 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -68,30 +63,30 @@ public class MyActivity extends AppCompatActivity {
 
         mOrderDatabase.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            public void onChildAdded(DataSnapshot dataSnapshot, @Nullable String s) {
 
                 notification();
 
             }
 
             @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            public void onChildChanged(DataSnapshot dataSnapshot, @Nullable String s) {
 
 
             }
 
             @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
 
             }
 
             @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+            public void onChildMoved(DataSnapshot dataSnapshot, @Nullable String s) {
 
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });
@@ -99,7 +94,7 @@ public class MyActivity extends AppCompatActivity {
 
         mUsersDatabase.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
 
                 long count = dataSnapshot.getChildrenCount();
 
@@ -110,7 +105,7 @@ public class MyActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError) {
 
                 progressbar.setVisibility(View.GONE);
 
@@ -120,7 +115,7 @@ public class MyActivity extends AppCompatActivity {
 
         mAdminDatabase.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
 
                if (dataSnapshot.child("Logout").child("status").getValue().equals("on")){
 
@@ -154,7 +149,7 @@ public class MyActivity extends AppCompatActivity {
 
                                        mAdminDatabase.child("Logout").child("status").setValue("off").addOnCompleteListener(new OnCompleteListener<Void>() {
                                            @Override
-                                           public void onComplete(@NonNull Task<Void> task) {
+                                           public void onComplete(Task<Void> task) {
 
                                                if (task.isSuccessful()){
 
@@ -170,12 +165,12 @@ public class MyActivity extends AppCompatActivity {
 
                                        mAdminDatabase.child("Logout").child("status").setValue("off").addOnCompleteListener(new OnCompleteListener<Void>() {
                                            @Override
-                                           public void onComplete(@NonNull Task<Void> task) {
+                                           public void onComplete(Task<Void> task) {
 
                                                if (task.isSuccessful()){
                                                    mAdminDatabase.child("Logout").child("Reason").setValue(editText.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
                                                        @Override
-                                                       public void onComplete(@NonNull Task<Void> task) {
+                                                       public void onComplete(Task<Void> task) {
 
                                                            status.setText("Turn On App");
                                                            status.setBackgroundColor(getResources().getColor(R.color.btnColorOff));
@@ -220,7 +215,7 @@ public class MyActivity extends AppCompatActivity {
 
                                            mAdminDatabase.child("Logout").child("status").setValue("on").addOnCompleteListener(new OnCompleteListener<Void>() {
                                                @Override
-                                               public void onComplete(@NonNull Task<Void> task) {
+                                               public void onComplete(Task<Void> task) {
 
                                                    if (task.isSuccessful()){
 
@@ -248,7 +243,7 @@ public class MyActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
         });

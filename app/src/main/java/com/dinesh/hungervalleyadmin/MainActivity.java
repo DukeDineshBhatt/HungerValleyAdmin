@@ -1,13 +1,13 @@
 package com.dinesh.hungervalleyadmin;
 
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
                     mCartListDatabase.addValueEventListener(new ValueEventListener() {
                         @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        public void onDataChange(DataSnapshot dataSnapshot) {
 
 
                             if (dataSnapshot.child("User").getValue().equals(txt_username) && dataSnapshot.child("Password").getValue().equals(txt_password)) {
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        public void onCancelled(DatabaseError databaseError) {
 
                         }
                     });
