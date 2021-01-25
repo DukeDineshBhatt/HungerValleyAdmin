@@ -1,6 +1,7 @@
 package com.dinesh.hungervalleyadmin;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,8 +55,6 @@ public class NewOrdersActivity extends AppCompatActivity {
 
                     linearLayoutManager = new LinearLayoutManager(NewOrdersActivity.this);
                     recyclerView.setLayoutManager(linearLayoutManager);
-                    //recyclerView.setHasFixedSize(true);
-                    //recyclerView.setNestedScrollingEnabled(false);
 
                     FirebaseRecyclerOptions<ListSetGet> options =
                             new FirebaseRecyclerOptions.Builder<ListSetGet>()
@@ -67,70 +66,6 @@ public class NewOrdersActivity extends AppCompatActivity {
                     adapter.startListening();
                     recyclerView.setAdapter(adapter);
 
-                    /*FirebaseRecyclerAdapter<MyDataSetGet, FriendsViewHolder> friendsRecyclerView = new FirebaseRecyclerAdapter<MyDataSetGet, FriendsViewHolder>(
-
-                            MyDataSetGet.class,
-                            R.layout.list_item_single,
-                            FriendsViewHolder.class,
-                            mOrdersDatabase
-
-                    ) {
-                        @Override
-                        protected void populateViewHolder(final FriendsViewHolder viewHolder, MyDataSetGet model, int position) {
-
-                            final String list_user_id = getRef(position).getKey();
-
-                            mOrdersDatabase.child(list_user_id).addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                                    viewHolder.setName(list_user_id);
-
-                                    for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-
-                                        if (!dataSnapshot1.getKey().equals("Total Price")) {
-
-                                            String status = dataSnapshot1.getValue().toString();
-
-                                            viewHolder.setStatus(status);
-
-
-                                        }
-
-                                        if (!dataSnapshot1.getKey().equals("Status") && !dataSnapshot1.getKey().equals("Total Price")) {
-
-                                            // name = dataSnapshot1.getKey().toString();
-                                        }
-
-                                    }
-
-                                    viewHolder.mView.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-
-                                            Intent intent = new Intent(NewOrdersActivity.this, SingleOrderActivity.class);
-
-                                            intent.putExtra("user_id", list_user_id);
-                                            startActivity(intent);
-
-                                        }
-                                    });
-
-                                    progressBar.setVisibility(View.GONE);
-
-                                }
-
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {
-
-                                    progressBar.setVisibility(View.GONE);
-                                }
-                            });
-
-                        }
-                    };
-
-                    recyclerView.setAdapter(friendsRecyclerView);*/
 
                     progressBar.setVisibility(View.GONE);
 
@@ -156,7 +91,7 @@ public class NewOrdersActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-     
+
 
     }
 
@@ -176,7 +111,16 @@ public class NewOrdersActivity extends AppCompatActivity {
 
             final String Id = getRef(position).getKey();
             holder.name.setText(Id);
-            holder.status.setText(model.getStatus());
+
+            if (model.getStatus().equals("Pending")) {
+
+                holder.status.setText(model.getStatus());
+            } else {
+
+                holder.status.setText(model.getStatus());
+                holder.status.setTextColor(Color.parseColor("#008000"));
+
+            }
 
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

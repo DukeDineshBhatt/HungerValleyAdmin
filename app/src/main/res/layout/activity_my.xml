@@ -39,6 +39,13 @@
             android:text="New Orders" />
 
         <Button
+            android:id="@+id/res"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="55dp"
+            android:text="Restaurants" />
+
+        <Button
             android:id="@+id/orders"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

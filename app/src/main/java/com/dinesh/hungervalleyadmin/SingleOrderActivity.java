@@ -3,6 +3,7 @@ package com.dinesh.hungervalleyadmin;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -39,10 +40,11 @@ public class SingleOrderActivity extends AppCompatActivity {
     private LinearLayoutManager linearLayoutManager, linearLayoutManager1;
 
     private DatabaseReference mCartListDatabase, mUserDatabase, myDatabase;
-    String userId;
-    TextView number, name, address, altNumber, total, status;
+    String userId, statusTxt;
+    TextView number, name, address, altNumber, total;
     ProgressBar progressbar;
-    Button delete,edit;
+    Button delete, edit, status;
+    int statusItem;
 
     private myadapter adapter;
 
@@ -67,11 +69,11 @@ public class SingleOrderActivity extends AppCompatActivity {
         number.setText("Phone Number : " + userId);
 
         res_name = (RecyclerView) findViewById(R.id.res_name);
-        Log.d("DDDD", userId);
 
         // res_name.setHasFixedSize(true);
         // res_name.setNestedScrollingEnabled(false);
 
+        final CharSequence[] items = {"OnWay"};
 
         mCartListDatabase = FirebaseDatabase.getInstance().getReference().child("Orders List").child("User View").child(userId);
         mUserDatabase = FirebaseDatabase.getInstance().getReference().child("Users").child(userId);
@@ -130,85 +132,68 @@ public class SingleOrderActivity extends AppCompatActivity {
         adapter.startListening();
         res_name.setAdapter(adapter);
 
-
-
-
-        /*FirebaseRecyclerAdapter<CartDataSetGet, FriendsViewHolder> friendsRecyclerView = new FirebaseRecyclerAdapter<CartDataSetGet, FriendsViewHolder>(
-
-                CartDataSetGet.class,
-                R.layout.list_cart_item,
-                FriendsViewHolder.class,
-                mCartListDatabase
-
-        ) {
+        status.setOnClickListener(new View.OnClickListener() {
             @Override
-            protected void populateViewHolder(final FriendsViewHolder viewHolder, CartDataSetGet model, int position) {
+            public void onClick(View view) {
 
-                Log.d("masin", getRef(position).getKey());
+                AlertDialog.Builder builder = new AlertDialog.Builder(SingleOrderActivity.this);
+                builder.setTitle("Select Status");
+                builder.setIcon(R.drawable.ic_baseline_edit_24);
+                builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int item) {
 
-                String restaurantName = getRef(position).getKey();
+                        //Toast.makeText(getApplicationContext(), items[item], Toast.LENGTH_SHORT).show();
 
-
-                viewHolder.setName(restaurantName);
-
-                myDatabase = FirebaseDatabase.getInstance().getReference().child("Orders List").child("User View").child(userId).child(getRef(position).getKey());
-                FirebaseRecyclerAdapter<ItemDataSetGet, MyFriendsViewHolder> friendsRecyclerView = new FirebaseRecyclerAdapter<ItemDataSetGet, MyFriendsViewHolder>(
-
-                        ItemDataSetGet.class,
-                        R.layout.nested_list,
-                        MyFriendsViewHolder.class,
-                        myDatabase
-
-                ) {
-                    @Override
-                    protected void populateViewHolder(final MyFriendsViewHolder viewHolder, ItemDataSetGet model, int position) {
-
-                        final String productName = getRef(position).getKey();
-
-                        myDatabase.child(productName).addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                                // viewHolder.setpName(productName);
-
-                                //viewHolder.setQuantity("2");
-
-                                Log.d("DINESHHHHHHH", dataSnapshot.toString());
-
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-
-                    }
-                };
-                viewHolder.recyclerView.setAdapter(friendsRecyclerView);
-
-                mCartListDatabase.child(restaurantName).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                        statusTxt = items[item].toString();
 
 
                     }
                 });
 
+                builder.setPositiveButton("Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+
+                                FirebaseDatabase.getInstance().getReference().child("Orders List").child("User View").child(userId).child("Status").setValue(statusTxt).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+
+                                        if (task.isSuccessful()) {
+
+                                            status.setText(statusTxt);
+                                            status.setBackgroundColor(Color.parseColor("#008000"));
+
+                                            Toast.makeText(SingleOrderActivity.this, "Success", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
+
+
+                            }
+                        });
+                builder.setNegativeButton("No",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
+
             }
-        };*/
+        });
 
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                showAlertDialog();
+                /*showAlertDialog();*/
+                Intent intent = new Intent(SingleOrderActivity.this, EditOrder.class);
+                intent.putExtra("user_id", userId);
+                startActivity(intent);
+
 
             }
         });
@@ -255,7 +240,18 @@ public class SingleOrderActivity extends AppCompatActivity {
         FirebaseDatabase.getInstance().getReference().child("Orders List").child("User View").child(userId).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                status.setText(dataSnapshot.child("Status").getValue().toString());
+
+                if (dataSnapshot.child("Status").getValue().toString().equals("Pending")) {
+
+                    status.setText(dataSnapshot.child("Status").getValue().toString());
+
+                } else {
+
+                    status.setText(dataSnapshot.child("Status").getValue().toString());
+                    status.setBackgroundColor(Color.parseColor("#008000"));
+                }
+
+
                 total.setText(String.valueOf(dataSnapshot.child("Total Price").getValue()));
 
             }
@@ -269,11 +265,10 @@ public class SingleOrderActivity extends AppCompatActivity {
     }
 
 
-
     private void showAlertDialog() {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(SingleOrderActivity.this);
         alertDialog.setTitle("Status");
-        String[] items = {"java","android","Data Structures","HTML","CSS"};
+        String[] items = {"java", "android", "Data Structures", "HTML", "CSS"};
         int checkedItem = 1;
         alertDialog.setSingleChoiceItems(items, checkedItem, new DialogInterface.OnClickListener() {
             @Override

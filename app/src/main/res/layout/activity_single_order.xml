@@ -26,8 +26,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="6dp"
                     android:layout_marginTop="6dp"
-                    android:layout_marginRight="6dp"
-                    android:layout_marginBottom="6dp">
+                    android:layout_marginRight="6dp">
 
                     <TextView
                         android:id="@+id/name"
@@ -39,13 +38,6 @@
 
                     </TextView>
                 </androidx.cardview.widget.CardView>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginLeft="6dp"
-                    android:layout_marginRight="6dp"
-                    android:background="#c0c0c0" />
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
@@ -119,12 +111,29 @@
 
                 </androidx.cardview.widget.CardView>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#c0c0c0" />
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="6dp"
+                    android:text="Order"
+                    android:textColor="#000"
+                    android:textSize="15dp"
+                    android:textStyle="bold"></TextView>
+
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/res_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp">
-
 
                 </androidx.recyclerview.widget.RecyclerView>
 
@@ -180,67 +189,44 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="0.5dp"
+                    android:layout_height="2dp"
                     android:layout_marginTop="12dp"
                     android:layout_marginBottom="6dp"
                     android:background="#c0c0c0" />
 
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginBottom="12dp"
                     android:weightSum="2">
 
-
-                    <TextView
+                    <Button
+                        android:id="@+id/status"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="left"
-                        android:layout_marginLeft="6dp"
+                        android:layout_marginLeft="12dp"
+                        android:layout_marginRight="6dp"
                         android:layout_weight="1"
-                        android:gravity="left"
-                        android:text="Status"
                         android:textSize="15dp"
-                        android:textStyle="bold"></TextView>
+                        android:textColor="#FFF"
+                        android:textStyle="bold"></Button>
 
-                    <LinearLayout
+                    <Button
+                        android:id="@+id/edit"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="right|center_vertical"
+                        android:layout_gravity="right"
                         android:layout_marginRight="12dp"
+                        android:layout_marginBottom="55dp"
                         android:layout_weight="1"
-                        android:gravity="right|center_vertical">
+                        android:drawableRight="@drawable/ic_baseline_edit_24"
+                        android:text="Edit">
 
-                        <TextView
-                            android:id="@+id/status"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textColor="#000"
-                            android:textSize="15dp"
-                            android:textStyle="bold"></TextView>
+                    </Button>
 
-                    </LinearLayout>
 
                 </LinearLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.5dp"
-                    android:layout_marginBottom="6dp"
-                    android:background="#c0c0c0" />
-
-                <Button
-                    android:id="@+id/edit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="right"
-                    android:layout_marginRight="12dp"
-                    android:layout_marginBottom="55dp"
-                    android:drawableRight="@drawable/ic_baseline_edit_24"
-                    android:text="Edit">
-
-                </Button>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </LinearLayout>

@@ -119,6 +119,9 @@ public class OrdersActivity extends AppCompatActivity {
         recyclerView.setAdapter(friendsRecyclerView);
 */
 
+
+        progressBar.setVisibility(View.GONE
+        );
     }
 
     public static class FriendsViewHolder extends RecyclerView.ViewHolder {

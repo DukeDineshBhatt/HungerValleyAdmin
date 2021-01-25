@@ -32,7 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class MyActivity extends AppCompatActivity {
 
-    Button orders, new_orders;
+    Button orders, new_orders, res;
     TextView users_count;
     ProgressBar progressbar;
     Button status;
@@ -48,6 +48,7 @@ public class MyActivity extends AppCompatActivity {
 
         orders = (Button) findViewById(R.id.orders);
         new_orders = (Button) findViewById(R.id.new_orders);
+        res = (Button) findViewById(R.id.res);
         users_count = (TextView) findViewById(R.id.users_count);
         progressbar = (ProgressBar) findViewById(R.id.progressbar);
         status = (findViewById(R.id.status));
@@ -117,129 +118,126 @@ public class MyActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
-               if (dataSnapshot.child("Logout").child("status").getValue().equals("on")){
+                if (dataSnapshot.child("Logout").child("status").getValue().equals("on")) {
 
-                   status.setText("Turn OFF App");
-                   status.setBackgroundColor(getResources().getColor(R.color.btnColor));
+                    status.setText("Turn OFF App");
+                    status.setBackgroundColor(getResources().getColor(R.color.btnColor));
 
-                   status.setOnClickListener(new View.OnClickListener() {
-                       @Override
-                       public void onClick(View view) {
+                    status.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
 
-                           final AlertDialog dialogBuilder = new AlertDialog.Builder(MyActivity.this).create();
-                           LayoutInflater inflater = MyActivity.this.getLayoutInflater();
-                           View dialogView = inflater.inflate(R.layout.custom_dialog, null);
+                            final AlertDialog dialogBuilder = new AlertDialog.Builder(MyActivity.this).create();
+                            LayoutInflater inflater = MyActivity.this.getLayoutInflater();
+                            View dialogView = inflater.inflate(R.layout.custom_dialog, null);
 
-                           final EditText editText = (EditText) dialogView.findViewById(R.id.edt_comment);
-                           Button button1 = (Button) dialogView.findViewById(R.id.buttonSubmit);
-                           Button button2 = (Button) dialogView.findViewById(R.id.buttonCancel);
+                            final EditText editText = (EditText) dialogView.findViewById(R.id.edt_comment);
+                            Button button1 = (Button) dialogView.findViewById(R.id.buttonSubmit);
+                            Button button2 = (Button) dialogView.findViewById(R.id.buttonCancel);
 
-                           button2.setOnClickListener(new View.OnClickListener() {
-                               @Override
-                               public void onClick(View view) {
-                                   dialogBuilder.dismiss();
-                               }
-                           });
-                           button1.setOnClickListener(new View.OnClickListener() {
-                               @Override
-                               public void onClick(View view) {
-                                   // DO SOMETHINGS
+                            button2.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    dialogBuilder.dismiss();
+                                }
+                            });
+                            button1.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    // DO SOMETHINGS
 
-                                   if (editText.getText().toString().equals("")){
+                                    if (editText.getText().toString().equals("")) {
 
-                                       mAdminDatabase.child("Logout").child("status").setValue("off").addOnCompleteListener(new OnCompleteListener<Void>() {
-                                           @Override
-                                           public void onComplete(Task<Void> task) {
+                                        mAdminDatabase.child("Logout").child("status").setValue("off").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(Task<Void> task) {
 
-                                               if (task.isSuccessful()){
+                                                if (task.isSuccessful()) {
 
-                                                   status.setText("Turn On App");
-                                                   status.setBackgroundColor(getResources().getColor(R.color.btnColorOff));
-                                                   Toast.makeText(MyActivity.this,"App is OFF now.",Toast.LENGTH_SHORT).show();
-                                               }
-                                           }
-                                       });
+                                                    status.setText("Turn On App");
+                                                    status.setBackgroundColor(getResources().getColor(R.color.btnColorOff));
+                                                    Toast.makeText(MyActivity.this, "App is OFF now.", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        });
 
-                                   }
-                                   else{
+                                    } else {
 
-                                       mAdminDatabase.child("Logout").child("status").setValue("off").addOnCompleteListener(new OnCompleteListener<Void>() {
-                                           @Override
-                                           public void onComplete(Task<Void> task) {
+                                        mAdminDatabase.child("Logout").child("status").setValue("off").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(Task<Void> task) {
 
-                                               if (task.isSuccessful()){
-                                                   mAdminDatabase.child("Logout").child("Reason").setValue(editText.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                                       @Override
-                                                       public void onComplete(Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    mAdminDatabase.child("Logout").child("Reason").setValue(editText.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                        @Override
+                                                        public void onComplete(Task<Void> task) {
 
-                                                           status.setText("Turn On App");
-                                                           status.setBackgroundColor(getResources().getColor(R.color.btnColorOff));
-                                                           Toast.makeText(MyActivity.this,"App is OFF now.",Toast.LENGTH_SHORT).show();
-                                                       }
-                                                   });
-                                               }
-                                           }
-                                       });
+                                                            status.setText("Turn On App");
+                                                            status.setBackgroundColor(getResources().getColor(R.color.btnColorOff));
+                                                            Toast.makeText(MyActivity.this, "App is OFF now.", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+                                                }
+                                            }
+                                        });
 
-                                       Toast.makeText(MyActivity.this,"App.",Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(MyActivity.this, "App.", Toast.LENGTH_SHORT).show();
 
-                                   }
-
-
-                                   dialogBuilder.dismiss();
-                               }
-                           });
-
-                           dialogBuilder.setView(dialogView);
-                           dialogBuilder.show();
-
-                       }
-                   });
-
-               }else{
-
-                   status.setText("Turn On App");
-                   status.setBackgroundColor(getResources().getColor(R.color.btnColorOff));
-
-                   status.setOnClickListener(new View.OnClickListener() {
-                       @Override
-                       public void onClick(View view) {
+                                    }
 
 
-                           new AlertDialog.Builder(MyActivity.this)
-                                   .setMessage("are you sure want to Turn On The App?")
-                                   .setNegativeButton(android.R.string.no, null)
-                                   .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    dialogBuilder.dismiss();
+                                }
+                            });
 
-                                       public void onClick(final DialogInterface arg0, int arg1) {
+                            dialogBuilder.setView(dialogView);
+                            dialogBuilder.show();
 
-                                           mAdminDatabase.child("Logout").child("status").setValue("on").addOnCompleteListener(new OnCompleteListener<Void>() {
-                                               @Override
-                                               public void onComplete(Task<Void> task) {
+                        }
+                    });
 
-                                                   if (task.isSuccessful()){
+                } else {
 
-                                                       status.setText("Turn OFF App");
-                                                       status.setBackgroundColor(getResources().getColor(R.color.btnColor));
-                                                       arg0.cancel();
-                                                       Toast.makeText(MyActivity.this,"App is ON now.",Toast.LENGTH_SHORT).show();
+                    status.setText("Turn On App");
+                    status.setBackgroundColor(getResources().getColor(R.color.btnColorOff));
 
-                                                   }
-
-                                               }
-                                           });
+                    status.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
 
 
+                            new AlertDialog.Builder(MyActivity.this)
+                                    .setMessage("are you sure want to Turn On The App?")
+                                    .setNegativeButton(android.R.string.no, null)
+                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                                        public void onClick(final DialogInterface arg0, int arg1) {
+
+                                            mAdminDatabase.child("Logout").child("status").setValue("on").addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(Task<Void> task) {
+
+                                                    if (task.isSuccessful()) {
+
+                                                        status.setText("Turn OFF App");
+                                                        status.setBackgroundColor(getResources().getColor(R.color.btnColor));
+                                                        arg0.cancel();
+                                                        Toast.makeText(MyActivity.this, "App is ON now.", Toast.LENGTH_SHORT).show();
+
+                                                    }
+
+                                                }
+                                            });
 
 
-                                       }
-                                   }).create().show();
+                                        }
+                                    }).create().show();
 
 
-                       }
-                   });
+                        }
+                    });
 
-               }
+                }
             }
 
             @Override
@@ -248,6 +246,18 @@ public class MyActivity extends AppCompatActivity {
             }
         });
 
+
+        res.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                Intent intent = new Intent(MyActivity.this, Restaurants.class);
+                startActivity(intent);
+
+
+            }
+        });
 
         orders.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -296,7 +306,7 @@ public class MyActivity extends AppCompatActivity {
                 .setContentTitle("Hunger Valley")
                 .setSmallIcon(R.drawable.ic_baseline_notifications_active_24)
                 .setAutoCancel(true)
-                .setVibrate(new long[] { 1000, 1000})
+                .setVibrate(new long[]{1000, 1000})
                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                 .setContentText(message);
 
