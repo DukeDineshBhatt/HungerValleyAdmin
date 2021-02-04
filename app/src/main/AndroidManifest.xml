@@ -13,7 +13,23 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".AddItem"></activity>
+        <activity android:name=".EditCategory"></activity>
+        <activity
+            android:name=".AddNewCategory"
+            android:parentActivityName=".CategoriesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".AddNewCatItem"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SubCategory"
+            android:parentActivityName=".CategoriesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".CategoriesActivity"
+            android:parentActivityName=".MyActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".AddItem" />
         <activity
             android:name=".SingleRestaurant"
             android:parentActivityName=".Restaurants"
@@ -28,6 +44,7 @@
         <activity android:name=".OrdersActivity" />
         <activity
             android:name=".NewOrdersActivity"
+            android:parentActivityName=".MyActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".SingleOrderActivity"

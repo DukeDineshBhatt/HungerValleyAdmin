@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,8 +34,8 @@ public class Restaurants extends AppCompatActivity {
     private RecyclerView recyclerView;
     private LinearLayoutManager linearLayoutManager;
     private myadapter adapter;
-
     Toolbar toolbar;
+    ProgressBar progressbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,8 +43,8 @@ public class Restaurants extends AppCompatActivity {
         setContentView(R.layout.activity_restaurants);
 
         toolbar = findViewById(R.id.toolbar);
+        progressbar = findViewById(R.id.progressbar);
         recyclerView = (RecyclerView) findViewById(R.id.upload_list);
-
 
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Restaurants");
@@ -51,6 +52,8 @@ public class Restaurants extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
+
+        progressbar.setVisibility(View.VISIBLE);
 
         linearLayoutManager = new LinearLayoutManager(Restaurants.this);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -66,7 +69,7 @@ public class Restaurants extends AppCompatActivity {
         adapter = new myadapter(options);
         adapter.startListening();
         recyclerView.setAdapter(adapter);
-
+        progressbar.setVisibility(View.GONE);
     }
 
 
@@ -129,7 +132,10 @@ public class Restaurants extends AppCompatActivity {
 
                 }
             });
+
+
         }
+
 
         @NonNull
         @Override

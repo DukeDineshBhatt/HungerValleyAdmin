@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".Restaurants">
 
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -18,12 +19,21 @@
             android:background="@color/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
+        <Button
+            android:id="@+id/add"
+            android:layout_margin="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Add New Category"></Button>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/upload_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="1dp"
+            android:layout_marginTop="12dp"
             android:layout_marginBottom="12dp"></androidx.recyclerview.widget.RecyclerView>
+
+
     </LinearLayout>
 
     <ProgressBar
@@ -32,4 +42,5 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:visibility="gone"></ProgressBar>
+
 </RelativeLayout>

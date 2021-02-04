@@ -32,7 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class MyActivity extends AppCompatActivity {
 
-    Button orders, new_orders, res;
+    Button orders, new_orders, res,cat;
     TextView users_count;
     ProgressBar progressbar;
     Button status;
@@ -49,6 +49,7 @@ public class MyActivity extends AppCompatActivity {
         orders = (Button) findViewById(R.id.orders);
         new_orders = (Button) findViewById(R.id.new_orders);
         res = (Button) findViewById(R.id.res);
+        cat = (Button) findViewById(R.id.cat);
         users_count = (TextView) findViewById(R.id.users_count);
         progressbar = (ProgressBar) findViewById(R.id.progressbar);
         status = (findViewById(R.id.status));
@@ -253,6 +254,18 @@ public class MyActivity extends AppCompatActivity {
 
 
                 Intent intent = new Intent(MyActivity.this, Restaurants.class);
+                startActivity(intent);
+
+
+            }
+        });
+
+        cat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                Intent intent = new Intent(MyActivity.this, CategoriesActivity.class);
                 startActivity(intent);
 
 
