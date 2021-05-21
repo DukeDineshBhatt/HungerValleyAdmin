@@ -33,6 +33,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class SingleOrderActivity extends AppCompatActivity {
 
     private RecyclerView res_name;
@@ -40,11 +45,14 @@ public class SingleOrderActivity extends AppCompatActivity {
     private LinearLayoutManager linearLayoutManager, linearLayoutManager1;
 
     private DatabaseReference mCartListDatabase, mUserDatabase, myDatabase;
-    String userId, statusTxt;
+    String userId, statusTxt, delBoyNameTxt, delBoyId;
     TextView number, name, address, altNumber, total;
     ProgressBar progressbar;
     Button delete, edit, status;
     int statusItem;
+    EditText delName;
+    DatabaseReference mDeliveryBoysDatabase;
+    List<String> listItems, listItems1;
 
     private myadapter adapter;
 
@@ -65,6 +73,10 @@ public class SingleOrderActivity extends AppCompatActivity {
         total = findViewById(R.id.total);
         status = findViewById(R.id.status);
         edit = findViewById(R.id.edit);
+        delName = findViewById(R.id.delName);
+
+        listItems = new ArrayList<String>();
+        listItems1 = new ArrayList<String>();
 
         number.setText("Phone Number : " + userId);
 
@@ -119,6 +131,28 @@ public class SingleOrderActivity extends AppCompatActivity {
             }
         });
 
+        mDeliveryBoysDatabase = FirebaseDatabase.getInstance().getReference().child("DeliveryBoys");
+
+        mDeliveryBoysDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+                    listItems.add(postSnapshot.child("name").getValue().toString());
+                    listItems1.add(postSnapshot.getKey().toString());
+
+
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         linearLayoutManager = new LinearLayoutManager(SingleOrderActivity.this);
         res_name.setLayoutManager(linearLayoutManager);
 
@@ -137,7 +171,7 @@ public class SingleOrderActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(SingleOrderActivity.this);
-                builder.setTitle("Select Status");
+                builder.setTitle("Select");
                 builder.setIcon(R.drawable.ic_baseline_edit_24);
                 builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
@@ -185,6 +219,7 @@ public class SingleOrderActivity extends AppCompatActivity {
             }
         });
 
+
         edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -194,6 +229,77 @@ public class SingleOrderActivity extends AppCompatActivity {
                 intent.putExtra("user_id", userId);
                 startActivity(intent);
 
+
+            }
+        });
+
+        delName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(SingleOrderActivity.this);
+                builder.setTitle("Select City");
+                builder.setCancelable(false);
+                builder.setSingleChoiceItems(listItems1.toArray(new String[listItems1.size()]), -1, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int item) {
+                        //Toast.makeText(getApplicationContext(), items[item], Toast.LENGTH_SHORT).show();
+                        delBoyNameTxt = listItems1.get(item).toString();
+
+                    }
+                });
+
+                builder.setPositiveButton("Ok",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                                progressbar.setVisibility(View.VISIBLE);
+
+                                FirebaseDatabase.getInstance().getReference().child("Orders List").child("User View").child(userId).child("DelBoy").setValue(delBoyNameTxt).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+
+                                            delName.setText(delBoyNameTxt);
+
+                                            Map userMap = new HashMap();
+                                            userMap.put("resPayAmount","");
+                                            userMap.put("amountStatus", "");
+                                            userMap.put("Status", "Pending");
+
+                                            FirebaseDatabase.getInstance().getReference().child("DeliveryBoys").child(delBoyNameTxt).child("Orders").child(userId).setValue(userMap).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<Void> task) {
+
+                                                    if (task.isSuccessful()){
+
+                                                        Toast.makeText(SingleOrderActivity.this, "DONE", Toast.LENGTH_SHORT).show();
+                                                        progressbar.setVisibility(View.GONE);
+
+                                                    }
+
+
+
+                                                }
+                                            });
+
+                                        } else {
+                                            Toast.makeText(SingleOrderActivity.this, "ERROR! TRY AGAIN", Toast.LENGTH_SHORT).show();
+
+                                        }
+                                    }
+                                });
+
+
+                            }
+                        });
+                builder.setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                //Toast.makeText(MainActivity.this, "Fail", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();
 
             }
         });
@@ -251,6 +357,15 @@ public class SingleOrderActivity extends AppCompatActivity {
                     status.setBackgroundColor(Color.parseColor("#008000"));
                 }
 
+                if (dataSnapshot.hasChild("DelBoy")) {
+
+                    delName.setText(dataSnapshot.child("DelBoy").getValue().toString());
+                } else {
+
+                    FirebaseDatabase.getInstance().getReference().child("Orders List").child("User View").child(userId).child("DelBoy").setValue("select");
+
+                }
+
 
                 total.setText(String.valueOf(dataSnapshot.child("Total Price").getValue()));
 
@@ -262,39 +377,6 @@ public class SingleOrderActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-
-    private void showAlertDialog() {
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(SingleOrderActivity.this);
-        alertDialog.setTitle("Status");
-        String[] items = {"java", "android", "Data Structures", "HTML", "CSS"};
-        int checkedItem = 1;
-        alertDialog.setSingleChoiceItems(items, checkedItem, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                switch (which) {
-                    case 0:
-                        Toast.makeText(SingleOrderActivity.this, "Clicked on java", Toast.LENGTH_LONG).show();
-                        break;
-                    case 1:
-                        Toast.makeText(SingleOrderActivity.this, "Clicked on android", Toast.LENGTH_LONG).show();
-                        break;
-                    case 2:
-                        Toast.makeText(SingleOrderActivity.this, "Clicked on Data Structures", Toast.LENGTH_LONG).show();
-                        break;
-                    case 3:
-                        Toast.makeText(SingleOrderActivity.this, "Clicked on HTML", Toast.LENGTH_LONG).show();
-                        break;
-                    case 4:
-                        Toast.makeText(SingleOrderActivity.this, "Clicked on CSS", Toast.LENGTH_LONG).show();
-                        break;
-                }
-            }
-        });
-        AlertDialog alert = alertDialog.create();
-        alert.setCanceledOnTouchOutside(false);
-        alert.show();
     }
 
 

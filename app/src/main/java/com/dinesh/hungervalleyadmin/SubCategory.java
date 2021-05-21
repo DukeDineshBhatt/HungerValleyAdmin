@@ -54,12 +54,10 @@ public class SubCategory extends AppCompatActivity {
     private LinearLayoutManager linearLayoutManager;
     DatabaseReference mCatDatabase, mAdminDatabase;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subzcat);
-
 
         flags = getWindow().getDecorView().getSystemUiVisibility(); // get current flag
         flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;   // add LIGHT_STATUS_BAR to flag
