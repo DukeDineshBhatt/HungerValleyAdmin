@@ -32,7 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class MyActivity extends AppCompatActivity {
 
-    Button orders, new_orders, res,cat;
+    Button orders, new_orders, res,cat,delBoys;
     TextView users_count;
     ProgressBar progressbar;
     Button status;
@@ -47,6 +47,7 @@ public class MyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_my);
 
         orders = (Button) findViewById(R.id.orders);
+        delBoys = (Button) findViewById(R.id.del_boys);
         new_orders = (Button) findViewById(R.id.new_orders);
         res = (Button) findViewById(R.id.res);
         cat = (Button) findViewById(R.id.cat);
@@ -113,7 +114,6 @@ public class MyActivity extends AppCompatActivity {
 
             }
         });
-
 
         mAdminDatabase.addValueEventListener(new ValueEventListener() {
             @Override
@@ -247,6 +247,17 @@ public class MyActivity extends AppCompatActivity {
             }
         });
 
+        delBoys.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+
+                Intent intent = new Intent(MyActivity.this, DelvieryBoysActivity.class);
+                startActivity(intent);
+
+
+            }
+        });
 
         res.setOnClickListener(new View.OnClickListener() {
             @Override

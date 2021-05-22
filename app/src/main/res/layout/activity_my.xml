@@ -34,22 +34,45 @@
         <Button
             android:id="@+id/new_orders"
             android:layout_width="match_parent"
+            android:paddingLeft="22dp"
+            android:textColor="#373737"
             android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_baseline_notifications_24"
+            android:foreground="?attr/selectableItemBackground"
             android:layout_marginTop="55dp"
             android:text="New Orders" />
 
         <Button
+            android:id="@+id/del_boys"
+            android:layout_width="match_parent"
+            android:paddingLeft="22dp"
+            android:textColor="#373737"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_baseline_directions_bike_24"
+            android:foreground="?attr/selectableItemBackground"
+            android:layout_marginTop="55dp"
+            android:text="Delivery Boys" />
+
+        <Button
             android:id="@+id/res"
             android:layout_width="match_parent"
+            android:paddingLeft="22dp"
+            android:textColor="#373737"
             android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_baseline_format_list_bulleted_24"
+            android:foreground="?attr/selectableItemBackground"
             android:layout_marginTop="55dp"
             android:text="Restaurants" />
 
         <Button
             android:id="@+id/cat"
             android:layout_width="match_parent"
+            android:paddingLeft="22dp"
+            android:textColor="#373737"
             android:layout_height="wrap_content"
-            android:layout_marginTop="45dp"
+            android:drawableLeft="@drawable/ic_baseline_category_24"
+            android:foreground="?attr/selectableItemBackground"
+            android:layout_marginTop="55dp"
             android:text="Categories" />
 
         <Button

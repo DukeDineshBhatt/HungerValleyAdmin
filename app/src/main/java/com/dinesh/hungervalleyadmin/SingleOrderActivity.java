@@ -176,8 +176,6 @@ public class SingleOrderActivity extends AppCompatActivity {
                 builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
 
-                        //Toast.makeText(getApplicationContext(), items[item], Toast.LENGTH_SHORT).show();
-
                         statusTxt = items[item].toString();
 
 
@@ -238,7 +236,7 @@ public class SingleOrderActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(SingleOrderActivity.this);
-                builder.setTitle("Select City");
+                builder.setTitle("Select");
                 builder.setCancelable(false);
                 builder.setSingleChoiceItems(listItems1.toArray(new String[listItems1.size()]), -1, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
@@ -262,7 +260,7 @@ public class SingleOrderActivity extends AppCompatActivity {
                                             delName.setText(delBoyNameTxt);
 
                                             Map userMap = new HashMap();
-                                            userMap.put("resPayAmount","");
+                                            userMap.put("resPayAmount", "");
                                             userMap.put("amountStatus", "");
                                             userMap.put("Status", "Pending");
 
@@ -270,13 +268,12 @@ public class SingleOrderActivity extends AppCompatActivity {
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
 
-                                                    if (task.isSuccessful()){
+                                                    if (task.isSuccessful()) {
 
                                                         Toast.makeText(SingleOrderActivity.this, "DONE", Toast.LENGTH_SHORT).show();
                                                         progressbar.setVisibility(View.GONE);
 
                                                     }
-
 
 
                                                 }
